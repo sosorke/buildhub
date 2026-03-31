@@ -673,8 +673,10 @@ small {
   border-top: 1px solid var(--line);
 }
 
-.reveal.is-visible {
+.reveal {
   opacity: 1;
+  transform: translateY(28px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 .reveal.visible {
