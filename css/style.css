@@ -767,3 +767,7 @@ small {
     flex-direction: column;
   }
 }
+* {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
