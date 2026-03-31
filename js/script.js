@@ -48,7 +48,7 @@ function themeColors() {
   const botaoTema = document.getElementById("themeToggle");
 
 function themeColors() {
-  const isLight = document.body.classList.contains("light-mode");
+  cconst isLight = document.body.classList.contains("light-mode");
 
   if (isLight) {
     return {
