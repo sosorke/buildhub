@@ -45,8 +45,11 @@ function createStars() {
 }
 
 function themeColors() {
-  const lightMode = document.body.classList.contains("light-mode");
+  const botaoTema = document.getElementById("themeToggle");
 
+botaoTema.addEventListener("click", () => {
+  document.body.classList.toggle("light-mode");
+});
   if (lightMode) {
     return {
       star: "rgba(16, 0, 114, 0.9)",
