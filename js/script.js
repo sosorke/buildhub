@@ -1,124 +1,136 @@
-const canvas = document.getElementById("starfield");
-const ctx = canvas.getContext("2d");
-const themeToggle = document.getElementById("themeToggle");
-const form = document.querySelector(".contact-form");
-const formFeedback = document.getElementById("formFeedback");
+const canvas = document.getElementById("space");
+const context = canvas.getContext("2d");
 const revealItems = document.querySelectorAll(".reveal");
 const counters = document.querySelectorAll(".counter");
+const themeToggle = document.getElementById("themeToggle");
+const contactForm = document.querySelector(".contact-form");
+const formStatus = document.getElementById("formStatus");
 
 let width = 0;
 let height = 0;
-let animationFrame = null;
 let stars = [];
+let animationId = null;
+
 const pointer = {
   x: 0,
   y: 0,
-  radius: 120,
+  radius: 140,
   active: false,
 };
 
 function resizeCanvas() {
   width = window.innerWidth;
   height = window.innerHeight;
+
   canvas.width = width * window.devicePixelRatio;
   canvas.height = height * window.devicePixelRatio;
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
-  ctx.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+
+  context.setTransform(window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
   createStars();
 }
 
 function createStars() {
-  const total = Math.max(70, Math.floor((width * height) / 16000));
-  stars = Array.from({ length: total }, () => ({
+  const amount = Math.max(80, Math.floor((width * height) / 18000));
+
+  stars = Array.from({ length: amount }, () => ({
     x: Math.random() * width,
     y: Math.random() * height,
-    z: Math.random() * 0.9 + 0.2,
-    size: Math.random() * 1.8 + 0.4,
-    vx: (Math.random() - 0.5) * 0.22,
-    vy: (Math.random() - 0.5) * 0.22,
+    size: Math.random() * 1.7 + 0.4,
+    speedX: (Math.random() - 0.5) * 0.35,
+    speedY: (Math.random() - 0.5) * 0.35,
+    depth: Math.random() * 0.8 + 0.3,
   }));
 }
 
-function getThemePalette() {
-  const lightMode = document.body.classList.contains("light-theme");
+function themeColors() {
+  const lightMode = document.body.classList.contains("light-mode");
 
-  return lightMode
-    ? {
-        star: "rgba(16, 0, 114, 0.9)",
-        glow: "rgba(0, 159, 203, 0.16)",
-        line: "rgba(16, 0, 114, 0.08)",
-      }
-    : {
-        star: "rgba(255, 255, 255, 0.92)",
-        glow: "rgba(122, 215, 255, 0.16)",
-        line: "rgba(122, 215, 255, 0.10)",
-      };
+  if (lightMode) {
+    return {
+      star: "rgba(16, 0, 114, 0.9)",
+      line: "rgba(16, 0, 114, 0.08)",
+      glow: "rgba(0, 127, 187, 0.16)",
+    };
+  }
+
+  return {
+    star: "rgba(255, 255, 255, 0.92)",
+    line: "rgba(103, 212, 255, 0.08)",
+    glow: "rgba(103, 212, 255, 0.16)",
+  };
 }
 
-function drawStars() {
-  const palette = getThemePalette();
-  ctx.clearRect(0, 0, width, height);
+function updateStar(star) {
+  if (pointer.active) {
+    const deltaX = pointer.x - star.x;
+    const deltaY = pointer.y - star.y;
+    const distance = Math.hypot(deltaX, deltaY);
+
+    if (distance < pointer.radius) {
+      const force = (pointer.radius - distance) / pointer.radius;
+      star.x -= (deltaX / (distance || 1)) * force * 1.3 * star.depth;
+      star.y -= (deltaY / (distance || 1)) * force * 1.3 * star.depth;
+    }
+  }
+
+  star.x += star.speedX * star.depth;
+  star.y += star.speedY * star.depth;
+
+  if (star.x < -20) star.x = width + 20;
+  if (star.x > width + 20) star.x = -20;
+  if (star.y < -20) star.y = height + 20;
+  if (star.y > height + 20) star.y = -20;
+}
+
+function drawSpace() {
+  const colors = themeColors();
+  context.clearRect(0, 0, width, height);
 
   for (const star of stars) {
-    const dx = pointer.x - star.x;
-    const dy = pointer.y - star.y;
-    const distance = Math.hypot(dx, dy);
-
-    if (pointer.active && distance < pointer.radius) {
-      star.x -= (dx / distance || 0) * 0.7 * star.z;
-      star.y -= (dy / distance || 0) * 0.7 * star.z;
-    }
-
-    star.x += star.vx * star.z;
-    star.y += star.vy * star.z;
-
-    if (star.x < -20) star.x = width + 20;
-    if (star.x > width + 20) star.x = -20;
-    if (star.y < -20) star.y = height + 20;
-    if (star.y > height + 20) star.y = -20;
-
-    ctx.beginPath();
-    ctx.fillStyle = palette.star;
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = palette.glow;
-    ctx.arc(star.x, star.y, star.size * star.z, 0, Math.PI * 2);
-    ctx.fill();
+    updateStar(star);
+    context.beginPath();
+    context.fillStyle = colors.star;
+    context.shadowBlur = 12;
+    context.shadowColor = colors.glow;
+    context.arc(star.x, star.y, star.size * star.depth, 0, Math.PI * 2);
+    context.fill();
   }
 
-  ctx.shadowBlur = 0;
+  context.shadowBlur = 0;
 
   for (let i = 0; i < stars.length; i += 1) {
-    const a = stars[i];
     for (let j = i + 1; j < stars.length; j += 1) {
-      const b = stars[j];
-      const distance = Math.hypot(a.x - b.x, a.y - b.y);
+      const first = stars[i];
+      const second = stars[j];
+      const distance = Math.hypot(first.x - second.x, first.y - second.y);
 
-      if (distance < 90) {
-        ctx.beginPath();
-        ctx.strokeStyle = palette.line;
-        ctx.lineWidth = 0.5;
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
-        ctx.stroke();
+      if (distance < 86) {
+        context.beginPath();
+        context.strokeStyle = colors.line;
+        context.lineWidth = 0.5;
+        context.moveTo(first.x, first.y);
+        context.lineTo(second.x, second.y);
+        context.stroke();
       }
     }
   }
 
-  animationFrame = window.requestAnimationFrame(drawStars);
+  animationId = requestAnimationFrame(drawSpace);
 }
 
-function initReveal() {
+function setupReveal() {
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
+          entry.target.classList.add("visible");
           observer.unobserve(entry.target);
         }
       });
     },
-    { threshold: 0.18 }
+    { threshold: 0.15 }
   );
 
   revealItems.forEach((item) => observer.observe(item));
@@ -126,25 +138,25 @@ function initReveal() {
 
 function animateCounter(counter) {
   const target = Number(counter.dataset.target);
-  const duration = 1400;
-  const startTime = performance.now();
+  const duration = 1500;
+  const start = performance.now();
 
-  function update(now) {
-    const progress = Math.min((now - startTime) / duration, 1);
+  function frame(now) {
+    const progress = Math.min((now - start) / duration, 1);
     const value = Math.floor(progress * target);
     counter.textContent = `+${value}`;
 
     if (progress < 1) {
-      window.requestAnimationFrame(update);
+      requestAnimationFrame(frame);
     } else {
       counter.textContent = `+${target}`;
     }
   }
 
-  window.requestAnimationFrame(update);
+  requestAnimationFrame(frame);
 }
 
-function initCounters() {
+function setupCounters() {
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -154,31 +166,31 @@ function initCounters() {
         }
       });
     },
-    { threshold: 0.7 }
+    { threshold: 0.65 }
   );
 
   counters.forEach((counter) => observer.observe(counter));
 }
 
-function initTheme() {
+function setupTheme() {
   const savedTheme = localStorage.getItem("buildhub-theme");
 
   if (savedTheme === "light") {
-    document.body.classList.add("light-theme");
+    document.body.classList.add("light-mode");
   }
 
   themeToggle.addEventListener("click", () => {
-    document.body.classList.toggle("light-theme");
-    const nextTheme = document.body.classList.contains("light-theme") ? "light" : "dark";
-    localStorage.setItem("buildhub-theme", nextTheme);
+    document.body.classList.toggle("light-mode");
+    const mode = document.body.classList.contains("light-mode") ? "light" : "dark";
+    localStorage.setItem("buildhub-theme", mode);
   });
 }
 
-function initForm() {
-  form.addEventListener("submit", (event) => {
+function setupForm() {
+  contactForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    formFeedback.textContent = "Mensagem enviada com sucesso. Em breve a BuildHub entra em contato.";
-    form.reset();
+    formStatus.textContent = "Mensagem enviada com sucesso. A BuildHub entrara em contato em breve.";
+    contactForm.reset();
   });
 }
 
@@ -193,15 +205,14 @@ window.addEventListener("mouseleave", () => {
 });
 
 window.addEventListener("resize", () => {
-  window.cancelAnimationFrame(animationFrame);
+  cancelAnimationFrame(animationId);
   resizeCanvas();
-  drawStars();
+  drawSpace();
 });
 
 resizeCanvas();
-drawStars();
-initReveal();
-initCounters();
-initTheme();
-initForm();
-
+drawSpace();
+setupReveal();
+setupCounters();
+setupTheme();
+setupForm();
