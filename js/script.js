@@ -47,10 +47,10 @@ function createStars() {
 function themeColors() {
   const botaoTema = document.getElementById("themeToggle");
 
-botaoTema.addEventListener("click", () => {
-  document.body.classList.toggle("light-mode");
-});
-  if (lightMode) {
+function themeColors() {
+  const isLight = document.body.classList.contains("light-mode");
+
+  if (isLight) {
     return {
       star: "rgba(16, 0, 114, 0.9)",
       line: "rgba(16, 0, 114, 0.08)",
@@ -62,6 +62,8 @@ botaoTema.addEventListener("click", () => {
     star: "rgba(255, 255, 255, 0.92)",
     line: "rgba(103, 212, 255, 0.08)",
     glow: "rgba(103, 212, 255, 0.16)",
+  };
+}
   };
 }
 
