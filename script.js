@@ -57,7 +57,6 @@ const state = {
 
 const selectors = {
   loader: document.querySelector("#loader"),
-  cursor: document.querySelector("#customCursor"),
   grid: document.querySelector("#floatingGrid"),
   brandText: document.querySelector("#brandText"),
   brandSymbol: document.querySelector("#brandSymbol"),
