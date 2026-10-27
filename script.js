@@ -2,18 +2,18 @@ const state = {
   projects: [
     {
       id: 1,
-      title: "GameBear",
-      category: "games",
-      label: "Empresa de Desenvolvimento de Jogos",
-      description: "Estudio especializado no desenvolvimento de jogos para PC, Mobile e Web, criando experiencias imersivas para jogadores do mundo inteiro.",
-      shortDescription: "Experiencias gamer para PC, Mobile e Web.",
-      stack: "Design gamer, UI neon, web interativa",
+      title: "Consultório Alexia de Medeiros",
+      category: "Beleza",
+      label: "Consultório Odontológico",
+      description: "Estudio especializado em odontologia e beleza pessoal",
+      shortDescription: "Odontologia.",
+      stack: "Design único, web interativa, cores atrativas",
       progress: 100,
-      url: "#",
+      url: "https://sosorke.github.io/testealexiacadm/",
       cover: "images/gamebear-cover.svg",
       logo: "images/gamebear-logo.svg",
       theme: "Escuro, azul e roxo neon",
-      features: ["Design gamer", "Tons escuros", "Azul e roxo neon", "Interface moderna"]
+      features: ["Design futurista", "Tons claros", "Rosa e Branco", "Interface moderna"]
     },
     {
       id: 2,
