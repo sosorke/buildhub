@@ -32,7 +32,7 @@ const state = {
     },
     {
       id: 3,
-      title: "Shield Woman",
+      title: "SafeHer",
       category: "store",
       label: "Loja de Defesa Pessoal Feminina",
       description: "E-commerce especializado em artigos voltados para segurança e proteção feminina, com foco em conscientização, informação e prevenção.",
